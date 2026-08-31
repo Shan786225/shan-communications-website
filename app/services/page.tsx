@@ -4,6 +4,7 @@ import { CallToAction } from '../components/CallToAction';
 import { PageHero } from '../components/PageHero';
 import { Reveal } from '../components/Reveal';
 import { services } from '../data/site';
+import { sitePath } from '../lib/sitePath';
 
 export const metadata: Metadata = {
   title: 'Business & Healthcare Solutions',
@@ -25,7 +26,7 @@ export default function ServicesPage() {
           {services.map((service, index) => (
             <Reveal key={service.slug} delay={(index % 2) * 70}>
               <Link className="catalog-card" href={`/services/${service.slug}`}>
-                <div className="catalog-image"><img src={service.image} alt="" /><span>{service.number}</span></div>
+                <div className="catalog-image"><img src={sitePath(service.image)} alt="" /><span>{service.number}</span></div>
                 <div className="catalog-copy"><small>{service.eyebrow}</small><h2>{service.title}</h2><p>{service.summary}</p><ul>{service.capabilities.slice(0, 4).map((item) => <li key={item}>{item}</li>)}</ul><strong>Explore this solution <i>↗</i></strong></div>
               </Link>
             </Reveal>

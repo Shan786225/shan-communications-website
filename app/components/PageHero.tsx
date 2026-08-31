@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { sitePath } from '../lib/sitePath';
 
 type PageHeroProps = {
   eyebrow: string;
@@ -11,7 +12,7 @@ type PageHeroProps = {
 export function PageHero({ eyebrow, title, description, image, parent }: PageHeroProps) {
   return (
     <section className="page-hero">
-      <img src={image} alt="" />
+      <img src={sitePath(image)} alt="" />
       <div className="page-hero-shade" />
       <div className="page-hero-atmosphere" aria-hidden="true"><i /><i /><i /></div>
       <div className="shell page-hero-content">

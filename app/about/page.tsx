@@ -5,6 +5,7 @@ import { PageHero } from '../components/PageHero';
 import { Reveal } from '../components/Reveal';
 import { SocialLinks } from '../components/SocialLinks';
 import { shanKhanSocialLinks } from '../data/company';
+import { sitePath } from '../lib/sitePath';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -51,12 +52,12 @@ export default function AboutPage() {
           <Reveal className="editorial-heading"><div><span className="eyebrow">Leadership</span><p className="section-index">Accountability</p></div><h2>People responsible for the direction and operating standard.</h2></Reveal>
           <div className="leadership-detail-grid">
             <Reveal className="leadership-detail-card">
-              <div className="leadership-card-image"><img src="/assets/shan-khan-executive.jpg" alt="Shan Khan (Ashan Ali)" /></div>
+              <div className="leadership-card-image"><img src={sitePath('/assets/shan-khan-executive.jpg')} alt="Shan Khan (Ashan Ali)" /></div>
               <SocialLinks links={shanKhanSocialLinks} compact />
               <div className="leadership-card-copy"><span>Founder & Chief Executive Officer</span><h3>Shan Khan <small>(Ashan Ali)</small></h3><p>Shan Khan is the Founder and CEO of Shan Communications. His published project record spans Remote Patient Monitoring (RPM), Chronic Care Management (CCM), Lifeline and ACP enrollment, telecom and broadband, home services, solar, ACA and Medicare, final expense, mortgage refinance, debt settlement and mass-tort campaigns. Across these programs, he has led customer acquisition, live transfers, lead generation, appointments, enrollments and technology-enabled operations—connecting business development with practical systems, partner management and accountable delivery.</p></div>
             </Reveal>
             <Reveal className="leadership-detail-card leadership-detail-card-secondary" delay={100}>
-              <div className="leadership-card-image"><img src="/assets/yasir-ali.jpeg" alt="Yasir Ali" /></div>
+              <div className="leadership-card-image"><img src={sitePath('/assets/yasir-ali.jpeg')} alt="Yasir Ali" /></div>
               <div className="leadership-card-copy"><span>Co-founder & Chief Operating Officer</span><h3>Yasir Ali</h3><p>Yasir’s experience across sales, partner relationships, project management and engineering supports the systems, execution and day-to-day discipline behind delivery.</p></div>
             </Reveal>
           </div>

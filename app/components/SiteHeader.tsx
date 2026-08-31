@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { companyContact } from '../data/company';
 import { services } from '../data/site';
+import { sitePath } from '../lib/sitePath';
 
 const companyLinks = [
   { label: 'About Shan', href: '/about' },
@@ -74,7 +75,7 @@ export function SiteHeader() {
 
       <div className="shell main-nav">
         <Link className="brand" href="/" aria-label="Shan Communications home" onClick={closeNavigation}>
-          <img src="/assets/shan-logo-clean.png" alt="Shan Communications" />
+          <img src={sitePath('/assets/shan-logo-clean.png')} alt="Shan Communications" />
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">

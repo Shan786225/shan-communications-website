@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { companyContact, companySocialLinks } from '../data/company';
 import { services } from '../data/site';
+import { sitePath } from '../lib/sitePath';
 import { SocialLinks } from './SocialLinks';
 
 export function SiteFooter() {
@@ -15,7 +16,7 @@ export function SiteFooter() {
       </div>
       <div className="footer-grid shell">
         <div className="footer-brand">
-          <img src="/assets/shan-logo-clean.png" alt="Shan Communications" />
+          <img src={sitePath('/assets/shan-logo-clean.png')} alt="Shan Communications" />
           <p>Business process, customer experience, healthcare and growth operations built around accountable delivery.</p>
           <a href={`mailto:${companyContact.email}`}>{companyContact.email}</a>
           <a href={companyContact.usPhoneHref}>{companyContact.usPhone}</a>

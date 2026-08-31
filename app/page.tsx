@@ -4,12 +4,13 @@ import { Reveal } from './components/Reveal';
 import { SocialLinks } from './components/SocialLinks';
 import { experiencePrograms, shanKhanSocialLinks } from './data/company';
 import { services } from './data/site';
+import { sitePath } from './lib/sitePath';
 
 export default function Home() {
   return (
     <main>
       <section className="home-hero">
-        <img className="home-hero-image" src="/assets/shan-call-center-1.jpg" alt="Shan Communications operations floor" />
+        <img className="home-hero-image" src={sitePath('/assets/shan-call-center-1.jpg')} alt="Shan Communications operations floor" />
         <div className="home-hero-overlay" />
         <div className="shell home-hero-content">
           <Reveal>
@@ -57,7 +58,7 @@ export default function Home() {
               <Link className="text-link" href="/about">Discover Shan Communications <span>↗</span></Link>
             </Reveal>
             <Reveal className="overview-image" delay={100}>
-              <img src="/assets/shan-bpo.jpg" alt="Professionals working together" />
+              <img src={sitePath('/assets/shan-bpo.jpg')} alt="Professionals working together" />
               <div><span>Our standard</span><strong>Clarity before scale.</strong></div>
             </Reveal>
             <Reveal className="proof-panel" delay={160}>
@@ -79,7 +80,7 @@ export default function Home() {
             {services.map((service, index) => (
               <Reveal key={service.slug} delay={index * 45}>
                 <Link className="service-showcase-card" href={`/services/${service.slug}`}>
-                  <div className="service-card-image"><img src={service.image} alt="" /><span>{service.number}</span></div>
+                  <div className="service-card-image"><img src={sitePath(service.image)} alt="" /><span>{service.number}</span></div>
                   <div className="service-card-copy"><small>{service.eyebrow}</small><h3>{service.shortTitle}</h3><p>{service.summary}</p><i>Explore solution ↗</i></div>
                 </Link>
               </Reveal>
@@ -123,11 +124,11 @@ export default function Home() {
             <Link className="text-link" href="/about#leadership">Meet the leadership team <span>↗</span></Link>
           </Reveal>
           <Reveal className="leader-card" delay={80}>
-            <div className="leader-portrait"><img src="/assets/shan-khan-executive.jpg" alt="Shan Khan (Ashan Ali)" /><div className="leader-card-copy"><span>Founder & Chief Executive Officer</span><strong>Shan Khan <small>(Ashan Ali)</small></strong></div></div>
+            <div className="leader-portrait"><img src={sitePath('/assets/shan-khan-executive.jpg')} alt="Shan Khan (Ashan Ali)" /><div className="leader-card-copy"><span>Founder & Chief Executive Officer</span><strong>Shan Khan <small>(Ashan Ali)</small></strong></div></div>
             <SocialLinks links={shanKhanSocialLinks} compact />
           </Reveal>
           <Reveal className="leader-card leader-card-offset" delay={140}>
-            <div className="leader-portrait"><img src="/assets/yasir-ali.jpeg" alt="Yasir Ali" /><div className="leader-card-copy"><span>Co-founder & Chief Operating Officer</span><strong>Yasir Ali</strong></div></div>
+            <div className="leader-portrait"><img src={sitePath('/assets/yasir-ali.jpeg')} alt="Yasir Ali" /><div className="leader-card-copy"><span>Co-founder & Chief Operating Officer</span><strong>Yasir Ali</strong></div></div>
           </Reveal>
         </div>
       </section>
