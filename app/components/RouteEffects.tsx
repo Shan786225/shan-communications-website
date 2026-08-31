@@ -9,13 +9,21 @@ const motionSelectors = [
   '.legal-content > *',
   '.faq-list details',
   '.responsibility-table > div',
+  '.contact-method',
+  '.contact-whatsapp-row',
+  '.contact-social-row > *',
+  '.impact-stats article',
+  '.capability-bar-inner > *',
+  '.band-cta-inner > *',
+  '.footer-lead > *',
+  '.footer-grid > *',
+  '.footer-social > *',
 ].join(',');
 
 export function RouteEffects() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const body = document.body;
     const moveToId = (id: string) => {
       const target = document.getElementById(id);
       if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
@@ -37,11 +45,6 @@ export function RouteEffects() {
       requestAnimationFrame(() => moveToId(id));
       window.setTimeout(() => moveToId(id), 120);
     };
-
-    body.classList.remove('route-entering');
-    void body.offsetWidth;
-    const routeFrame = requestAnimationFrame(() => body.classList.add('route-entering'));
-    const routeFinish = window.setTimeout(() => body.classList.remove('route-entering'), 1050);
 
     const motionBlocks = Array.from(document.querySelectorAll<HTMLElement>(motionSelectors));
     motionBlocks.forEach((node, index) => {
@@ -80,14 +83,11 @@ export function RouteEffects() {
     window.addEventListener('hashchange', move);
     document.addEventListener('click', followSamePageAnchor);
     return () => {
-      cancelAnimationFrame(routeFrame);
       cancelAnimationFrame(motionFrame);
       cancelAnimationFrame(frame);
-      window.clearTimeout(routeFinish);
       window.clearTimeout(motionSettle);
       window.clearTimeout(settle);
       motionObserver.disconnect();
-      body.classList.remove('route-entering');
       window.removeEventListener('scroll', revealMotionInView);
       window.removeEventListener('resize', revealMotionInView);
       window.removeEventListener('hashchange', move);
@@ -95,5 +95,5 @@ export function RouteEffects() {
     };
   }, [pathname]);
 
-  return <div className="route-transition" aria-hidden="true"><span /><span /><i /></div>;
+  return null;
 }

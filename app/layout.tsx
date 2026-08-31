@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { RouteEffects } from './components/RouteEffects';
+import { ScrollProgress } from './components/ScrollProgress';
 import { companyContact, companySocialLinks } from './data/company';
 import './globals.css';
 
@@ -72,6 +73,7 @@ export default function RootLayout({
             }),
           }}
         />
+        <ScrollProgress />
         <SiteHeader />
         <RouteEffects />
         {children}

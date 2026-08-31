@@ -12,10 +12,19 @@ export default function Home() {
       <section className="home-hero">
         <img className="home-hero-image" src={sitePath('/assets/shan-call-center-1.jpg')} alt="Shan Communications operations floor" />
         <div className="home-hero-overlay" />
+        <div className="hero-visual-field" aria-hidden="true">
+          <i /><i /><i />
+          <span /><span /><span />
+          <b />
+        </div>
         <div className="shell home-hero-content">
-          <Reveal>
+          <div className="hero-intro">
             <span className="hero-kicker">Business process · Healthcare · Growth operations</span>
-            <h1>Operations built<br />to move business<br /><em>forward.</em></h1>
+            <h1 aria-label="Operations built to move business forward.">
+              <span className="hero-title-line" aria-hidden="true">Operations built</span>
+              <span className="hero-title-line" aria-hidden="true">to move business</span>
+              <span className="hero-title-line" aria-hidden="true"><em>forward.</em></span>
+            </h1>
             <p>Shan Communications designs and operates customer, business and healthcare workflows through prepared teams, clear ownership and practical technology.</p>
             <div className="hero-actions">
               <Link className="button button-light" href="/services">Explore our solutions <span>↗</span></Link>
@@ -26,7 +35,7 @@ export default function Home() {
               <div><strong>50+</strong><span>Successful stories</span></div>
               <div><strong>300+</strong><span>Total experiences</span></div>
             </div>
-          </Reveal>
+          </div>
         </div>
         <div className="hero-rail">
           <span>01</span><i /><p>Accountable delivery<br />across every handoff</p>

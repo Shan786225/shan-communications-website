@@ -41,7 +41,7 @@ export const services: Service[] = [
     shortTitle: 'Business Process Outsourcing',
     summary: 'Recurring business workflows managed through defined roles, visible queues and accountable handoffs.',
     intro: 'Shan Communications brings structure to high-volume operational work. We document the workflow, assign clear ownership and establish a review rhythm so partners can scale without losing visibility.',
-    image: '/assets/shan-bpo.jpg',
+    image: '/assets/service-bpo-operations.jpg',
     capabilities: ['Back-office administration', 'Data entry and verification', 'Document and queue processing', 'Workflow coordination', 'Operational reporting', 'Dedicated team models'],
     outcomes: ['Less operational friction', 'Visible workload and accountability', 'Consistent process execution', 'More capacity for internal teams'],
     process: [
@@ -60,7 +60,7 @@ export const services: Service[] = [
     shortTitle: 'Medical Billing & RCM',
     summary: 'Non-clinical operational support across billing, revenue-cycle and patient-access workflows.',
     intro: 'We support defined healthcare administrative workflows while keeping clinical decisions and patient care with the provider organization. Each engagement is shaped around the client’s systems, access model and operating requirements.',
-    image: '/assets/service-data-operations.jpg',
+    image: '/assets/healthcare-operations.webp',
     capabilities: ['Claims and billing operations', 'Accounts-receivable follow-up', 'Denial workflow support', 'Eligibility verification', 'Prior-authorization support', 'Provider credentialing coordination'],
     outcomes: ['Clearer revenue-cycle ownership', 'More organized work queues', 'Consistent administrative follow-through', 'Defined non-clinical boundaries'],
     process: [
@@ -79,7 +79,7 @@ export const services: Service[] = [
     shortTitle: 'RPM & CCM Operations',
     summary: 'Structured, non-clinical enrollment and coordination support for connected-care programs.',
     intro: 'Our role is operational: outreach, enrollment support, documentation coordination, workflow follow-through and reporting. Clinical eligibility, care decisions and medical guidance remain with the provider and its licensed clinical team.',
-    image: '/assets/service-technology.jpg',
+    image: '/assets/service-rpm-ccm.jpg',
     capabilities: ['Patient outreach support', 'Enrollment workflow coordination', 'Consent and documentation follow-up', 'Device-logistics coordination', 'Program queue management', 'Operational reporting'],
     outcomes: ['More visible enrollment handoffs', 'Consistent outreach follow-through', 'Better organized program queues', 'Clear provider and partner responsibilities'],
     process: [
@@ -98,7 +98,7 @@ export const services: Service[] = [
     shortTitle: 'Digital Growth',
     summary: 'Campaign execution connected to the qualification, follow-up and operational discipline required for growth.',
     intro: 'We connect digital activity with real operational follow-through. Landing experiences, campaign support, lead workflows and reporting are organized around an agreed audience and business objective.',
-    image: '/assets/service-digital-marketing.jpg',
+    image: '/assets/service-digital-growth.jpg',
     capabilities: ['Campaign operations', 'Landing-page support', 'Lead generation workflows', 'Content coordination', 'Search and social support', 'Lead qualification and follow-up'],
     outcomes: ['A clearer path from campaign to conversation', 'Better organized lead handling', 'Aligned marketing and operations', 'More useful performance reporting'],
     process: [
@@ -117,7 +117,7 @@ export const services: Service[] = [
     shortTitle: 'Data & Technology Operations',
     summary: 'Practical technology and data support that keeps operational teams connected, organized and productive.',
     intro: 'Technology matters when it improves how work moves. We support data preparation, hosted-dialer operations, list and workflow administration, and reporting coordination around defined business processes.',
-    image: '/assets/service-technology.jpg',
+    image: '/assets/service-data-technology.jpg',
     capabilities: ['Hosted dialer support', 'Campaign and list administration', 'Data preparation', 'Workflow configuration', 'Access and role coordination', 'Reporting support'],
     outcomes: ['Fewer operational handoff gaps', 'Cleaner workflow inputs', 'More consistent campaign setup', 'Technology aligned to the process'],
     process: [

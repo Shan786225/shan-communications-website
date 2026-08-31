@@ -19,8 +19,6 @@ export function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    node.classList.remove('is-visible');
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
