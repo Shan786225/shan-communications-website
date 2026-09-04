@@ -1,0 +1,4 @@
+:HL["/shan-communications-website/_next/static/chunks/066jf0nk75nic.css","style"]
+:HL["/shan-communications-website/_next/static/chunks/0th.bp9.hjfud.css","style"]
+:HL["/shan-communications-website/assets/shan-logo-clean.png","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"MLJ1E1cHAYnRIlqaejlZh"}
