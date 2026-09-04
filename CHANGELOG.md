@@ -2,6 +2,9 @@
 
 ## 2026-09-05
 
+- Completed a full responsive QA pass across every public route at phone, tablet, laptop and desktop widths.
+- Corrected narrow-phone hero clipping, strengthened mobile content gutters and removed the overlapping mobile scroll prompt.
+- Corrected the collapsed desktop header track so the conversation action remains centered inside the header boundary.
 - Prevented mobile content sections from remaining hidden and appearing as large blank spaces when scroll-triggered motion is delayed.
 - Added a prominent Jobs hero action that takes applicants directly to the application form.
 - Added a compact, polished mobile Start a conversation action and corrected anchor navigation to the contact form.
