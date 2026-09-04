@@ -2,6 +2,8 @@
 
 ## 2026-09-05
 
+- Added dedicated MariaDB storage, protected CV retention, Google Sheets mirroring and an authenticated operations dashboard for website submissions.
+- Added dashboard search, filters, workflow notes, CSV export and authenticated CV downloads.
 - Permanently removed the former WordPress files, full-account migration backup, LiteSpeed WordPress cache, WordPress metadata, database and database user from cPanel after explicit approval.
 - Replaced the obsolete WordPress rollback procedure with a coded-release rollback procedure.
 - Completed a full responsive QA pass across every public route at phone, tablet, laptop and desktop widths.

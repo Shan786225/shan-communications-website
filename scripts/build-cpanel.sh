@@ -7,5 +7,6 @@ cd "$project_dir"
 
 GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH= pnpm build:pages
 cp deployment/cpanel/.htaccess out/.htaccess
+cp public/dashboard/.htaccess out/dashboard/.htaccess
 
 printf '%s\n' "cPanel deployment files are ready in $project_dir/out"

@@ -1,0 +1,25 @@
+<?php
+declare(strict_types=1);
+
+// Copy this file to /home/CPANEL_USER/shan_config/backend.php.
+// Never place the production copy in public_html or commit real secrets.
+return [
+    'app_key' => 'GENERATE_A_LONG_RANDOM_SECRET',
+    'storage_dir' => '/home/CPANEL_USER/shan_data/cv',
+    'database' => [
+        'dsn' => 'mysql:host=localhost;dbname=CPANEL_DATABASE;charset=utf8mb4',
+        'username' => 'CPANEL_DATABASE_USER',
+        'password' => 'GENERATE_A_LONG_RANDOM_PASSWORD',
+    ],
+    'dashboard' => [
+        'username' => 'ceo@shancommunication.com',
+        'password_hash' => 'GENERATE_WITH_PHP_PASSWORD_HASH',
+        'session_name' => 'shan_operations_dashboard',
+    ],
+    'google_sheets' => [
+        'enabled' => false,
+        'webhook_url' => '',
+        'secret' => '',
+        'sheet_url' => '',
+    ],
+];

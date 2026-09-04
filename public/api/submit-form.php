@@ -6,6 +6,8 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
+require_once __DIR__ . '/_backend.php';
+
 const BUSINESS_EMAIL = 'ceo@shancommunication.com';
 const JOBS_EMAIL = 'hr@shancommunication.com';
 const SENDER_EMAIL = 'support@shancommunication.com';
@@ -111,6 +113,7 @@ $message = clean_text('message', 6000);
 
 $fields = [];
 $attachment = null;
+$resumeUrl = '';
 $destination = BUSINESS_EMAIL;
 $successMessage = 'Thank you. Your inquiry was submitted successfully. Our team will respond using the contact details provided.';
 
@@ -203,8 +206,48 @@ if ($formType === 'business') {
 }
 
 $subject = preg_replace('/[\r\n]+/', ' ', $subject) ?? 'Shan Communications website submission';
+$publicId = shan_uuid();
+$storedName = null;
+try {
+    if ($attachment !== null) {
+        $storedName = shan_store_cv($publicId, $attachment);
+    }
+    $sheetsConfig = shan_config()['google_sheets'] ?? [];
+    $submissionId = shan_store_submission([
+        'public_id' => $publicId,
+        'form_type' => $formType,
+        'full_name' => $name,
+        'email' => $email,
+        'phone' => $phone !== '' ? $phone : null,
+        'topic' => $formType === 'business' ? $topic : null,
+        'role_name' => $formType === 'job' ? $role : null,
+        'experience' => $formType === 'job' ? $experience : null,
+        'availability' => $formType === 'job' ? $availability : null,
+        'message' => $message,
+        'resume_url' => $resumeUrl !== '' ? $resumeUrl : null,
+        'resume_file_name' => $attachment !== null ? (string)$attachment['name'] : null,
+        'resume_stored_name' => $storedName,
+        'resume_mime' => $attachment !== null ? (string)$attachment['mime'] : null,
+        'resume_size' => $attachment !== null ? strlen((string)$attachment['data']) : null,
+        'sheets_status' => !empty($sheetsConfig['enabled']) ? 'pending' : 'disabled',
+        'source_url' => substr((string)($_SERVER['HTTP_REFERER'] ?? ''), 0, 500),
+        'ip_hash' => shan_request_ip_hash(),
+        'user_agent' => substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500),
+    ]);
+} catch (Throwable $error) {
+    if ($storedName !== null) {
+        $storage = rtrim((string)(shan_config()['storage_dir'] ?? ''), '/');
+        if ($storage !== '') {
+            @unlink($storage . '/' . basename($storedName));
+        }
+    }
+    error_log('Shan submission storage error: ' . $error->getMessage());
+    respond(503, false, 'The secure submission system is temporarily unavailable. Please try again in a few minutes.');
+}
+
 $lines = [
     'A new submission was received from shancommunication.com.',
+    'Submission ID: ' . $publicId,
     'Received: ' . gmdate('Y-m-d H:i:s') . ' UTC',
     '',
 ];
@@ -236,8 +279,27 @@ if ($attachment !== null && is_string($attachment['data'])) {
 }
 
 $sent = getenv('SHAN_FORM_DRY_RUN') === '1' || mail($destination, $subject, $mailBody, implode("\r\n", $headers));
+$sheetsStatus = shan_mirror_submission([
+    'publicId' => $publicId,
+    'submittedAtUtc' => gmdate('Y-m-d H:i:s'),
+    'formType' => $formType,
+    'workflowStatus' => 'new',
+    'fullName' => $name,
+    'email' => $email,
+    'phone' => $phone,
+    'topic' => $formType === 'business' ? $topic : '',
+    'role' => $formType === 'job' ? $role : '',
+    'experience' => $formType === 'job' ? $experience : '',
+    'availability' => $formType === 'job' ? $availability : '',
+    'resumeUrl' => $resumeUrl,
+    'resumeFileName' => $attachment !== null ? (string)$attachment['name'] : '',
+    'message' => $message,
+    'emailStatus' => $sent ? 'sent' : 'failed',
+]);
+shan_update_delivery($submissionId, $sent ? 'sent' : 'failed', $sheetsStatus);
+
 if (!$sent) {
-    respond(502, false, 'Your submission could not be sent right now. Please try again in a few minutes.');
+    respond(202, true, 'Your submission was saved securely. Our team will review it from the dashboard.');
 }
 
 respond(200, true, $successMessage);

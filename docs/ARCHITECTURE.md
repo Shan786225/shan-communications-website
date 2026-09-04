@@ -30,7 +30,7 @@ The current implementation submits forms to the same-domain PHP handler at `publ
 - `JobApplicationForm.tsx` submits applications to the HR mailbox and accepts a validated CV attachment or accessible CV URL.
 - The PHP handler validates required fields, origin, consent, CV size/type and repeated submissions. The fixed server-side sender is the support mailbox.
 
-The next backend phase should store submissions in a dedicated MySQL database, mirror approved fields to Google Sheets, move notifications to authenticated SMTP, store any retained CV files outside the public document root, and expose an authenticated dashboard. Until that phase is deployed, documentation and website copy must not claim that submissions are stored in the database, Sheets or dashboard.
+The production backend stores submissions in a dedicated MariaDB database, mirrors approved fields to Google Sheets, keeps retained CV files outside the public document root and exposes an authenticated dashboard. Email notifications continue through the hosting mail transport. Secrets and administrator credentials are loaded from protected configuration outside `public_html`.
 
 ## Production data boundaries
 
