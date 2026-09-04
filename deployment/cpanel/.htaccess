@@ -3,7 +3,7 @@ DirectoryIndex index.html
 
 RewriteEngine On
 
-# Preserve the legacy WordPress URLs as permanent SEO redirects.
+# Preserve the former public URLs as permanent SEO redirects.
 RewriteRule ^about-us/?$ /about/ [R=301,L]
 RewriteRule ^our-services/?$ /services/ [R=301,L]
 RewriteRule ^b2b-affiliation/?$ /partnerships/ [R=301,L]
@@ -33,4 +33,3 @@ ErrorDocument 404 /404.html
   ExpiresByType text/css "access plus 1 month"
   ExpiresByType application/javascript "access plus 1 month"
 </IfModule>
-

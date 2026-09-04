@@ -34,7 +34,7 @@ The next backend phase should store submissions in a dedicated MySQL database, m
 
 ## Production data boundaries
 
-- The legacy WordPress database is retained only for rollback and historical recovery.
-- The future website submission database must be separate from the WordPress database.
+- The former WordPress files, backups, database and database user were permanently removed from cPanel on 2026-09-05 after explicit approval; they are not a rollback source.
+- Any future website submission database must be dedicated to the coded website and must not reuse legacy credentials or naming.
 - Secrets belong in server-side configuration outside `public_html` or in cPanel-managed environment settings.
 - Uploaded CV files are validated by extension, MIME type and size, attached directly to the HR notification and not written into the public web directory.

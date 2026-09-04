@@ -2,6 +2,8 @@
 
 ## 2026-09-05
 
+- Permanently removed the former WordPress files, full-account migration backup, LiteSpeed WordPress cache, WordPress metadata, database and database user from cPanel after explicit approval.
+- Replaced the obsolete WordPress rollback procedure with a coded-release rollback procedure.
 - Completed a full responsive QA pass across every public route at phone, tablet, laptop and desktop widths.
 - Corrected narrow-phone hero clipping, strengthened mobile content gutters and removed the overlapping mobile scroll prompt.
 - Corrected the collapsed desktop header track so the conversation action remains centered inside the header boundary.
@@ -14,7 +16,7 @@
 ## 2026-09-04
 
 - Replaced the legacy WordPress frontend on `shancommunication.com` with the coded static website.
-- Preserved the WordPress files in a dated account-level archive and retained the WordPress database.
+- Preserved the WordPress files in a dated account-level archive and retained the WordPress database during the initial cutover; both were later permanently removed on 2026-09-05 after explicit approval.
 - Created and independently downloaded a complete cPanel account backup.
 - Added permanent redirects from the former WordPress routes.
 - Confirmed business inquiries route to the CEO mailbox and applications route to HR.
