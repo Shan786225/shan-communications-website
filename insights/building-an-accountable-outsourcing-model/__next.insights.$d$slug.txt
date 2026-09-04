@@ -1,5 +1,5 @@
 1:"$Sreact.fragment"
-2:I[11968,["/shan-communications-website/_next/static/chunks/0ea8si9ywq0z_.js","/shan-communications-website/_next/static/chunks/10-.ind~di4oi.js","/shan-communications-website/_next/static/chunks/0n7gz84jmsrn1.js"],"default"]
-3:I[87804,["/shan-communications-website/_next/static/chunks/0ea8si9ywq0z_.js","/shan-communications-website/_next/static/chunks/10-.ind~di4oi.js","/shan-communications-website/_next/static/chunks/0n7gz84jmsrn1.js"],"default"]
+2:I[11968,["/shan-communications-website/_next/static/chunks/0r28-h7ck9.fu.js","/shan-communications-website/_next/static/chunks/05brxst9kp_8_.js","/shan-communications-website/_next/static/chunks/0n7gz84jmsrn1.js"],"default"]
+3:I[87804,["/shan-communications-website/_next/static/chunks/0r28-h7ck9.fu.js","/shan-communications-website/_next/static/chunks/05brxst9kp_8_.js","/shan-communications-website/_next/static/chunks/0n7gz84jmsrn1.js"],"default"]
 4:[]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"MLJ1E1cHAYnRIlqaejlZh"}
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"o2DGRWnalbRBwqPxKaFWj"}
