@@ -19,6 +19,9 @@ function doPost(event) {
       return jsonResponse({success: false, message: 'Unauthorized'});
     }
 
+    if (!/^[0-9a-f-]{36}$/i.test(payload.publicId || '') || !['job', 'business'].includes(payload.formType)) {
+      return jsonResponse({success: false, message: 'Invalid submission'});
+    }
     const isJob = payload.formType === 'job';
     const tabName = isJob ? 'Job Applications' : 'Business Inquiries';
     const headers = isJob ? JOB_HEADERS : BUSINESS_HEADERS;
@@ -26,9 +29,6 @@ function doPost(event) {
     const sheet = spreadsheet.getSheetByName(tabName);
     if (!sheet) {
       throw new Error('Required sheet tab is missing: ' + tabName);
-    }
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(headers);
     }
 
     const row = isJob ? [
@@ -43,11 +43,17 @@ function doPost(event) {
     const lock = LockService.getScriptLock();
     lock.waitLock(10000);
     try {
-      sheet.appendRow(row.map(safeCell));
+      if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+      const lastRow = sheet.getLastRow();
+      const existing = lastRow > 1
+        ? sheet.getRange(2, 1, lastRow - 1, 1).createTextFinder(payload.publicId).matchEntireCell(true).useRegularExpression(false).findNext()
+        : null;
+      const targetRow = existing ? existing.getRow() : lastRow + 1;
+      sheet.getRange(targetRow, 1, 1, headers.length).setValues([row.map(safeCell)]);
     } finally {
       lock.releaseLock();
     }
-    return jsonResponse({success: true});
+    return jsonResponse({success: true, publicId: payload.publicId});
   } catch (error) {
     console.error(error);
     return jsonResponse({success: false, message: 'Append failed'});

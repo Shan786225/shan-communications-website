@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05 — Dashboard QA and Sheets delivery
+
+- Fixed native MySQL search parameters, combined filters, filtered CSV exports and out-of-range pagination.
+- Replaced clipped application popovers with dedicated responsive review pages and clear status controls, private notes and save confirmations.
+- Added idempotent Sheets delivery, status updates, pending-delivery visibility and scheduled retries.
+- Added dashboard regression checks and documented the staging and support workflow.
+
 ## 2026-09-05
 
 - Added dedicated MariaDB storage, protected CV retention, Google Sheets mirroring and an authenticated operations dashboard for website submissions.

@@ -56,6 +56,7 @@ function shan_db(): PDO
         ]
     );
 
+    $pdo->exec("SET time_zone = '+00:00'");
     $schema = require __DIR__ . '/_schema.php';
     foreach ($schema as $statement) {
         $pdo->exec($statement);
@@ -157,8 +158,8 @@ function shan_mirror_submission(array $payload): string
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_MAXREDIRS => 3,
-                CURLOPT_CONNECTTIMEOUT => 4,
-                CURLOPT_TIMEOUT => 8,
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_TIMEOUT => 18,
             ]);
             $response = curl_exec($handle);
             $status = (int)curl_getinfo($handle, CURLINFO_HTTP_CODE);
@@ -173,7 +174,7 @@ function shan_mirror_submission(array $payload): string
                 'method' => 'POST',
                 'header' => "Content-Type: application/json\r\n",
                 'content' => $json,
-                'timeout' => 8,
+                'timeout' => 18,
                 'ignore_errors' => true,
             ],
         ]);
@@ -184,7 +185,62 @@ function shan_mirror_submission(array $payload): string
         return 'failed';
     }
     $decoded = json_decode($response, true);
-    return is_array($decoded) && !empty($decoded['success']) ? 'synced' : 'failed';
+    return is_array($decoded) && ($decoded['success'] ?? false) === true
+        && ($decoded['publicId'] ?? '') === ($payload['publicId'] ?? '') ? 'synced' : 'failed';
+}
+
+function shan_sync_submission(int $id): string
+{
+    if (empty(shan_config()['google_sheets']['enabled'])) { return 'disabled'; }
+    $pdo = shan_db();
+    // Serialize delivery for each record and read the latest saved state.
+    $lockName = 'shan_sheet_' . $id;
+    $lock = $pdo->prepare('SELECT GET_LOCK(:name, 0)');
+    $lock->execute(['name' => $lockName]);
+    if ((int)$lock->fetchColumn() !== 1) { return 'pending'; }
+    try {
+        $query = $pdo->prepare('SELECT * FROM shan_submissions WHERE id = :id LIMIT 1');
+        $query->execute(['id' => $id]);
+        $row = $query->fetch();
+        if (!$row) { return 'failed'; }
+        $status = shan_mirror_submission([
+            'publicId' => $row['public_id'], 'submittedAtUtc' => $row['created_at'],
+            'formType' => $row['form_type'], 'workflowStatus' => $row['workflow_status'],
+            'fullName' => $row['full_name'], 'email' => $row['email'], 'phone' => $row['phone'],
+            'topic' => $row['topic'], 'role' => $row['role_name'], 'experience' => $row['experience'],
+            'availability' => $row['availability'], 'resumeUrl' => $row['resume_url'],
+            'resumeFileName' => $row['resume_file_name'], 'message' => $row['message'],
+            'emailStatus' => $row['email_status'],
+        ]);
+        // A newer review saved during delivery must remain queued for retry.
+        $update = $pdo->prepare('UPDATE shan_submissions SET sheets_status = :status WHERE id = :id AND workflow_status = :workflow_status');
+        $update->execute(['status' => $status, 'id' => $id, 'workflow_status' => $row['workflow_status']]);
+        return $update->rowCount() || $row['sheets_status'] === $status ? $status : 'pending';
+    } finally {
+        $release = $pdo->prepare('SELECT RELEASE_LOCK(:name)');
+        $release->execute(['name' => $lockName]);
+    }
+}
+
+function shan_retry_sheets(int $limit = 5): array
+{
+    if (empty(shan_config()['google_sheets']['enabled'])) { throw new RuntimeException('Google Sheets is not enabled.'); }
+    $pdo = shan_db();
+    $rows = $pdo->query("SELECT id FROM shan_submissions WHERE sheets_status <> 'synced' ORDER BY updated_at, id LIMIT " . max(1, min(20, $limit)))->fetchAll();
+    $synced = 0;
+    foreach ($rows as $row) {
+        try { if (shan_sync_submission((int)$row['id']) === 'synced') { $synced++; } }
+        catch (Throwable $error) { error_log('Shan Sheets sync failed for submission ' . (int)$row['id']); }
+    }
+    $remaining = (int)$pdo->query("SELECT COUNT(*) FROM shan_submissions WHERE sheets_status <> 'synced'")->fetchColumn();
+    return ['synced' => $synced, 'remaining' => $remaining];
+}
+
+function shan_dashboard_base(): string
+{
+    // A server-only mount override lets the exact release be tested in staging.
+    $base = (string)getenv('SHAN_DASHBOARD_BASE');
+    return preg_match('~^/dashboard/(?:[a-zA-Z0-9_-]+/)*$~D', $base) ? $base : '/dashboard/';
 }
 
 function shan_dashboard_start_session(): void
@@ -231,7 +287,7 @@ function shan_dashboard_require_auth(): void
 {
     shan_dashboard_start_session();
     if (!shan_dashboard_is_authenticated()) {
-        header('Location: /dashboard/');
+        header('Location: ' . shan_dashboard_base());
         exit;
     }
 }

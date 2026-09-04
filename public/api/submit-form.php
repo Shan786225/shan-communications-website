@@ -279,24 +279,9 @@ if ($attachment !== null && is_string($attachment['data'])) {
 }
 
 $sent = getenv('SHAN_FORM_DRY_RUN') === '1' || mail($destination, $subject, $mailBody, implode("\r\n", $headers));
-$sheetsStatus = shan_mirror_submission([
-    'publicId' => $publicId,
-    'submittedAtUtc' => gmdate('Y-m-d H:i:s'),
-    'formType' => $formType,
-    'workflowStatus' => 'new',
-    'fullName' => $name,
-    'email' => $email,
-    'phone' => $phone,
-    'topic' => $formType === 'business' ? $topic : '',
-    'role' => $formType === 'job' ? $role : '',
-    'experience' => $formType === 'job' ? $experience : '',
-    'availability' => $formType === 'job' ? $availability : '',
-    'resumeUrl' => $resumeUrl,
-    'resumeFileName' => $attachment !== null ? (string)$attachment['name'] : '',
-    'message' => $message,
-    'emailStatus' => $sent ? 'sent' : 'failed',
-]);
-shan_update_delivery($submissionId, $sent ? 'sent' : 'failed', $sheetsStatus);
+shan_update_delivery($submissionId, $sent ? 'sent' : 'failed', !empty($sheetsConfig['enabled']) ? 'pending' : 'disabled');
+try { shan_sync_submission($submissionId); }
+catch (Throwable $error) { error_log('Shan Sheets delivery pending for submission ' . $submissionId); }
 
 if (!$sent) {
     respond(202, true, 'Your submission was saved securely. Our team will review it from the dashboard.');
