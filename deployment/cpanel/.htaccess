@@ -1,0 +1,36 @@
+Options -Indexes
+DirectoryIndex index.html
+
+RewriteEngine On
+
+# Preserve the legacy WordPress URLs as permanent SEO redirects.
+RewriteRule ^about-us/?$ /about/ [R=301,L]
+RewriteRule ^our-services/?$ /services/ [R=301,L]
+RewriteRule ^b2b-affiliation/?$ /partnerships/ [R=301,L]
+RewriteRule ^careers/?$ /jobs/ [R=301,L]
+RewriteRule ^announcements/?$ /insights/ [R=301,L]
+RewriteRule ^blog/?$ /insights/ [R=301,L]
+RewriteRule ^gallery/?$ /about/ [R=301,L]
+RewriteRule ^contact-us/?$ /contact/ [R=301,L]
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+
