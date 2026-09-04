@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
 3:I[77916,["/shan-communications-website/_next/static/chunks/0r28-h7ck9.fu.js","/shan-communications-website/_next/static/chunks/05brxst9kp_8_.js","/shan-communications-website/_next/static/chunks/0n7gz84jmsrn1.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":["$L2",null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"o2DGRWnalbRBwqPxKaFWj"}
+0:{"rsc":["$","$1","c",{"children":["$L2",null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"kj1UTxu5J5RGqhiiPwSR1"}
 5:null
 2:E{"digest":"NEXT_REDIRECT;replace;/jobs;307;"}

@@ -1,7 +1,7 @@
 :HL["/shan-communications-website/_next/static/chunks/066jf0nk75nic.css","style"]
-:HL["/shan-communications-website/_next/static/chunks/0tr0tep.ihjga.css","style"]
+:HL["/shan-communications-website/_next/static/chunks/0dzhuf67doanr.css","style"]
 :HL["/shan-communications-website/_next/static/media/797e433ab948586e-s.p.08e28id.o-okb.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/shan-communications-website/_next/static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/shan-communications-website/assets/shan-logo-clean.png","image"]
 :HL["/shan-communications-website/assets/shan-call-center-5.jpg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"contact","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"o2DGRWnalbRBwqPxKaFWj"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"contact","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"kj1UTxu5J5RGqhiiPwSR1"}
