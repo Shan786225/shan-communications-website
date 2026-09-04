@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent } from 'react';
+import { companyContact } from '../data/company';
 
 export function ContactForm({ career = false }: { career?: boolean }) {
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -13,7 +14,8 @@ export function ContactForm({ career = false }: { career?: boolean }) {
     const message = String(form.get('message') || '');
     const subject = career ? `Career inquiry from ${name}` : `Website inquiry: ${topic || 'New project'}`;
     const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, topic ? `${career ? 'Role' : 'Area of interest'}: ${topic}` : '', '', message].filter(Boolean).join('\n');
-    window.location.href = `mailto:support@shancommunication.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const destinationEmail = career ? companyContact.careersEmail : companyContact.businessInquiryEmail;
+    window.location.href = `mailto:${destinationEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (

@@ -1,5 +1,7 @@
 export const companyContact = {
   email: 'support@shancommunication.com',
+  businessInquiryEmail: 'ceo@shancommunication.com',
+  careersEmail: 'hr@shancommunication.com',
   directEmail: 'alishankhan77751@gmail.com',
   usPhone: '+1 701 204 4063',
   usPhoneHref: 'tel:+17012044063',

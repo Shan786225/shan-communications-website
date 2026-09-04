@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { HiOutlineArrowUpTray, HiOutlineLink } from 'react-icons/hi2';
+import { companyContact } from '../data/company';
 
 const MAX_CV_SIZE = 10 * 1024 * 1024;
 const ALLOWED_CV_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
@@ -56,7 +57,7 @@ export function JobApplicationForm() {
       value('message'),
     ].join('\n');
 
-    window.location.href = `mailto:support@shancommunication.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:${companyContact.careersEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
