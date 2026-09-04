@@ -28,7 +28,7 @@ export default function Home() {
             <p>Shan Communications designs and operates customer, business and healthcare workflows through prepared teams, clear ownership and practical technology.</p>
             <div className="hero-actions">
               <Link className="button button-light" href="/services">Explore our solutions <span>↗</span></Link>
-              <Link className="button button-ghost" href="/contact#contact-form" scroll={false}>Discuss a project</Link>
+              <Link className="button button-ghost" href="/contact#contact-form">Discuss a project</Link>
             </div>
             <div className="hero-proof" aria-label="Company highlights">
               <div><strong>6+</strong><span>Years of operating experience</span></div>

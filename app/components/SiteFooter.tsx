@@ -12,7 +12,7 @@ export function SiteFooter() {
           <span className="eyebrow eyebrow-light">Start a conversation</span>
           <h2>Bring us the operational challenge. We’ll help shape the way forward.</h2>
         </div>
-        <Link className="circle-link" href="/contact#contact-form" scroll={false} aria-label="Start a conversation with Shan Communications">↗</Link>
+        <Link className="circle-link" href="/contact#contact-form" aria-label="Start a conversation with Shan Communications">↗</Link>
       </div>
       <div className="footer-grid shell">
         <div className="footer-brand">

@@ -27,7 +27,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       <section className="service-intro section-space">
         <div className="shell service-intro-grid">
           <Reveal><span className="eyebrow">The capability</span><h2>Structured around the operation—not a generic package.</h2></Reveal>
-          <Reveal className="service-intro-copy" delay={70}><p className="large-copy">{service.intro}</p><Link className="button button-dark" href="/contact#contact-form" scroll={false}>Discuss this capability <span>↗</span></Link></Reveal>
+          <Reveal className="service-intro-copy" delay={70}><p className="large-copy">{service.intro}</p><Link className="button button-dark" href="/contact#contact-form">Discuss this capability <span>↗</span></Link></Reveal>
         </div>
       </section>
       <section className="capability-detail section-soft section-space">

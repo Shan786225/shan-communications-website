@@ -60,7 +60,7 @@ export default function AboutPage() {
               <div className="leadership-card-copy"><span>Co-founder & Chief Operating Officer</span><h3>Yasir Ali</h3><p>Yasir’s experience across sales, partner relationships, project management and engineering supports the systems, execution and day-to-day discipline behind delivery.</p></div>
             </Reveal>
           </div>
-          <Reveal className="leadership-note"><blockquote>“Our work is successful when the partner can see what is happening, who owns the next action and how the operation is improving.”</blockquote><Link href="/contact#contact-form" scroll={false}>Speak with our team <span>↗</span></Link></Reveal>
+          <Reveal className="leadership-note"><blockquote>“Our work is successful when the partner can see what is happening, who owns the next action and how the operation is improving.”</blockquote><Link href="/contact#contact-form">Speak with our team <span>↗</span></Link></Reveal>
         </div>
       </section>
 

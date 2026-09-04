@@ -7,9 +7,10 @@ type PageHeroProps = {
   description: string;
   image: string;
   parent?: { label: string; href: string };
+  action?: { label: string; href: string };
 };
 
-export function PageHero({ eyebrow, title, description, image, parent }: PageHeroProps) {
+export function PageHero({ eyebrow, title, description, image, parent, action }: PageHeroProps) {
   return (
     <section className="page-hero">
       <img src={sitePath(image)} alt="" />
@@ -20,6 +21,7 @@ export function PageHero({ eyebrow, title, description, image, parent }: PageHer
         <span className="eyebrow eyebrow-light">{eyebrow}</span>
         <h1>{title}</h1>
         <p>{description}</p>
+        {action ? <Link className="button button-light page-hero-action" href={action.href}>{action.label}<span>↗</span></Link> : null}
       </div>
       <div className="page-hero-index"><span>Shan Communications</span><i /></div>
     </section>

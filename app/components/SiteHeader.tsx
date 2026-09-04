@@ -127,7 +127,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="nav-actions">
-          <Link className="nav-cta" href="/contact#contact-form" scroll={false} onClick={closeNavigation}>Start a conversation <span>↗</span></Link>
+          <Link className="nav-cta" href="/contact#contact-form" onClick={closeNavigation}><span className="nav-cta-label-full">Start a conversation</span><span className="nav-cta-label-short">Start</span><b>↗</b></Link>
           <button className={`menu-toggle${mobileOpen ? ' is-open' : ''}`} type="button" onClick={() => { setMenuPath(pathname); setOpen(!mobileOpen); }} aria-expanded={mobileOpen} aria-label={mobileOpen ? 'Close menu' : 'Open menu'}>
             <i /><i /><i />
           </button>

@@ -25,12 +25,12 @@ const jobAreas = [
 export default function JobsPage() {
   return (
     <main>
-      <PageHero eyebrow="Jobs" title="Build experience that moves your career forward." description="Explore the work, understand our hiring process and submit a complete application to Shan Communications." image="/assets/shan-call-center.jpg" />
+      <PageHero eyebrow="Jobs" title="Build experience that moves your career forward." description="Explore the work, understand our hiring process and submit a complete application to Shan Communications." image="/assets/shan-call-center.jpg" action={{ label: 'Apply now', href: '#job-application-form' }} />
 
       <section className="career-intro section-space">
         <div className="shell story-grid">
           <Reveal><span className="eyebrow">Jobs at Shan</span><h2>Professional growth grounded in real work.</h2></Reveal>
-          <Reveal className="story-body" delay={70}><p className="large-copy">People perform better when expectations are clear, support is available and feedback leads to measurable improvement.</p><p>Applications are reviewed against current client, program and operational needs. A submitted application is not a guarantee of an interview or opening.</p><Link className="button button-dark jobs-apply-button" href="#job-application-form" scroll={false}>Apply now <span>↗</span></Link></Reveal>
+          <Reveal className="story-body" delay={70}><p className="large-copy">People perform better when expectations are clear, support is available and feedback leads to measurable improvement.</p><p>Applications are reviewed against current client, program and operational needs. A submitted application is not a guarantee of an interview or opening.</p><Link className="button button-dark jobs-apply-button" href="#job-application-form">Apply now <span>↗</span></Link></Reveal>
         </div>
       </section>
 

@@ -39,7 +39,9 @@ Do not edit `.next/`, `.vinext/`, `dist/` or `out/`. They are generated output.
 - Job applications: `hr@shancommunication.com`
 - General public support: `support@shancommunication.com`
 
-The present public forms prepare an email in the visitor's email application. The planned server-side workflow—MySQL storage, Google Sheets mirroring and the authenticated dashboard—is a separate backend phase and must not be described as active until it has been implemented and tested.
+The public forms submit inside the website through `public/api/submit-form.php`. Business inquiries are emailed to the CEO mailbox and job applications, including an uploaded CV or CV link, are emailed to HR. The handler validates fields and attachments, limits repeated submissions and never exposes mailbox credentials to the browser.
+
+MySQL storage, Google Sheets mirroring and the authenticated dashboard remain a separate backend phase and must not be described as active until they have been implemented and tested.
 
 ## Validation
 
@@ -59,4 +61,3 @@ The finished deployment files will be in `out/`.
 ## Deployment safety
 
 Read `docs/CPANEL-DEPLOYMENT.md` before changing production. Always create and verify a complete account backup, stage the release, preserve unrelated hosted directories, and keep a tested rollback copy.
-

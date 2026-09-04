@@ -7,12 +7,14 @@
 3. Run `./scripts/build-cpanel.sh`.
 4. Package the contents of `out/`, including the generated `.htaccess` copied from `deployment/cpanel/.htaccess`.
 
+The production account must run PHP 7.4 or newer, permit PHP `mail()`, allow at least a 12 MB POST request and provide Fileinfo or `mime_content_type()` for CV validation. The form endpoint is tracked at `public/api/submit-form.php` and must be deployed with the static export.
+
 ## Safe deployment sequence
 
 1. Create a complete cPanel account backup including the home directory, databases and email configuration.
 2. Download the backup to an independent machine and verify that the gzip/tar archive is readable.
 3. Upload the new release to a non-production directory.
-4. Test the staged homepage, main routes, assets, responsive layout, forms and error handling.
+4. Test the staged homepage, main routes, assets, responsive layout, the PHP form endpoint, form success/error states and mailbox delivery.
 5. Move the existing WordPress files into a dated archive outside `public_html`. Do not delete them during cutover.
 6. Keep `.well-known`, `cgi-bin`, `/shan/`, `/V1/` and any other unrelated hosted applications in place.
 7. Extract the validated release into `public_html`.
@@ -45,4 +47,3 @@ If a production-blocking problem appears:
 5. Purge the LiteSpeed cache and test the former homepage and administrative login.
 
 Do not delete the rollback archive or WordPress database until the coded site and its future backend have remained stable and a separate retention decision is approved.
-
