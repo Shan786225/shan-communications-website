@@ -6,6 +6,7 @@ import test from 'node:test';
 function integration() {
   const rows = {'Business Inquiries': [], 'Job Applications': []};
   let locks = 0;
+  const formats = {};
   const context = vm.createContext({
     console: {error() {}},
     PropertiesService: {getScriptProperties: () => ({getProperty: key => ({SHAN_WEBHOOK_SECRET:'test-secret',SHAN_SPREADSHEET_ID:'test-sheet'}[key])})},
@@ -15,6 +16,7 @@ function integration() {
       getLastRow: () => rows[name].length,
       appendRow: row => rows[name].push([...row]),
       getRange: (row) => ({
+        setNumberFormat: format => {formats[name + row] = format;},
         setValues: values => {rows[name][row-1] = [...values[0]];},
         createTextFinder: id => ({matchEntireCell: () => ({useRegularExpression: () => ({findNext: () => {
           const index=rows[name].findIndex(r=>r[0]===id);
@@ -24,7 +26,7 @@ function integration() {
     })})},
   });
   vm.runInContext(fs.readFileSync(new URL('../deployment/google-apps-script/Code.gs',import.meta.url),'utf8'),context);
-  return {rows, post: payload => context.doPost({postData:{contents:JSON.stringify(payload)}}), locks:()=>locks};
+  return {rows, formats, post: payload => context.doPost({postData:{contents:JSON.stringify(payload)}}), locks:()=>locks};
 }
 const record={secret:'test-secret',publicId:'11111111-1111-4111-8111-111111111111',formType:'business',fullName:'Test',workflowStatus:'new',message:'=HYPERLINK("bad")'};
 test('unauthorized and malformed requests never write rows',()=>{
@@ -50,4 +52,10 @@ test('jobs go to their own tab; unavailable tabs fail visibly',()=>{
   assert.equal(app.rows['Business Inquiries'].length,0);
   delete app.rows['Job Applications'];
   assert.equal(app.post({...record,formType:'job'}).success,false);
+});
+test('phone numbers are written as text with leading zeros intact',()=>{
+  const app=integration();
+  app.post({...record,phone:'03100900000'});
+  assert.equal(app.formats['Business Inquiries2'],'@');
+  assert.equal(app.rows['Business Inquiries'][1][5],'03100900000');
 });

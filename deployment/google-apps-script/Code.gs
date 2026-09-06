@@ -49,7 +49,10 @@ function doPost(event) {
         ? sheet.getRange(2, 1, lastRow - 1, 1).createTextFinder(payload.publicId).matchEntireCell(true).useRegularExpression(false).findNext()
         : null;
       const targetRow = existing ? existing.getRow() : lastRow + 1;
-      sheet.getRange(targetRow, 1, 1, headers.length).setValues([row.map(safeCell)]);
+      const target = sheet.getRange(targetRow, 1, 1, headers.length);
+      // Preserve leading-zero phone numbers, IDs and dates exactly as submitted.
+      target.setNumberFormat('@');
+      target.setValues([row.map(safeCell)]);
     } finally {
       lock.releaseLock();
     }

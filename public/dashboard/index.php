@@ -62,6 +62,7 @@ $filters = dashboard_filters($_GET);
 
 if ($configurationError === '' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!shan_dashboard_verify_csrf((string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403);
         $errorMessage = 'Your session expired. Please refresh and try again.';
     } elseif ($action === 'login') {
         $dashboard = $config['dashboard'] ?? [];

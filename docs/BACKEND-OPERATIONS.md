@@ -52,6 +52,8 @@ Do not make the spreadsheet publicly editable. Changing spreadsheet headers or t
 
 The webhook updates or inserts by Submission ID inside a script lock. Repeated delivery and status updates therefore keep one row per submission. Internal dashboard notes and CV file contents are not copied to Sheets. The response must acknowledge the same submission ID before it is marked synced.
 
+Submission rows use plain-text cell formatting so phone-number leading zeros and identifiers are preserved. Formula-like input is escaped. A failed manual batch stops after its first service failure; remaining records stay queued for scheduled retry.
+
 Install `deployment/cpanel/sync-sheets.php` at `/home/comshan979/shan_config/sync-sheets.php`. In cPanel Cron Jobs, run `/usr/local/bin/php /home/comshan979/shan_config/sync-sheets.php` every five minutes. Keep exactly one matching job. Pending, failed and previously disabled records are retried without re-sending notification emails. The dashboard shows outstanding deliveries and also offers **Retry pending sync**.
 
 ## Regression checks and staging

@@ -215,7 +215,11 @@ function shan_sync_submission(int $id): string
         // A newer review saved during delivery must remain queued for retry.
         $update = $pdo->prepare('UPDATE shan_submissions SET sheets_status = :status WHERE id = :id AND workflow_status = :workflow_status');
         $update->execute(['status' => $status, 'id' => $id, 'workflow_status' => $row['workflow_status']]);
-        return $update->rowCount() || $row['sheets_status'] === $status ? $status : 'pending';
+        if ($update->rowCount()) { return $status; }
+        $query->execute(['id' => $id]);
+        $latest = $query->fetch();
+        return $latest && $latest['workflow_status'] === $row['workflow_status']
+            && $latest['sheets_status'] === $status ? $status : 'pending';
     } finally {
         $release = $pdo->prepare('SELECT RELEASE_LOCK(:name)');
         $release->execute(['name' => $lockName]);
@@ -229,8 +233,15 @@ function shan_retry_sheets(int $limit = 5): array
     $rows = $pdo->query("SELECT id FROM shan_submissions WHERE sheets_status <> 'synced' ORDER BY updated_at, id LIMIT " . max(1, min(20, $limit)))->fetchAll();
     $synced = 0;
     foreach ($rows as $row) {
-        try { if (shan_sync_submission((int)$row['id']) === 'synced') { $synced++; } }
-        catch (Throwable $error) { error_log('Shan Sheets sync failed for submission ' . (int)$row['id']); }
+        try {
+            $status = shan_sync_submission((int)$row['id']);
+            if ($status === 'synced') { $synced++; }
+            // Stop on a service failure so a manual retry cannot block for minutes.
+            elseif ($status === 'failed') { break; }
+        } catch (Throwable $error) {
+            error_log('Shan Sheets sync failed for submission ' . (int)$row['id']);
+            break;
+        }
     }
     $remaining = (int)$pdo->query("SELECT COUNT(*) FROM shan_submissions WHERE sheets_status <> 'synced'")->fetchColumn();
     return ['synced' => $synced, 'remaining' => $remaining];
