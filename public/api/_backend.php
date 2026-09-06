@@ -268,6 +268,7 @@ function shan_dashboard_start_session(): void
         'httponly' => true,
         'samesite' => 'Strict',
     ]);
+    ini_set('session.use_strict_mode', '1');
     session_start();
     if (isset($_SESSION['last_activity']) && time() - (int)$_SESSION['last_activity'] > 1800) {
         $_SESSION = [];
@@ -278,7 +279,7 @@ function shan_dashboard_start_session(): void
 
 function shan_dashboard_is_authenticated(): bool
 {
-    return !empty($_SESSION['shan_authenticated']) && $_SESSION['shan_authenticated'] === true;
+    return shan_current_user() !== null;
 }
 
 function shan_dashboard_csrf(): string
@@ -294,11 +295,16 @@ function shan_dashboard_verify_csrf(string $token): bool
     return isset($_SESSION['csrf']) && hash_equals((string)$_SESSION['csrf'], $token);
 }
 
-function shan_dashboard_require_auth(): void
+function shan_dashboard_require_auth(bool $allowPasswordChange = false): void
 {
     shan_dashboard_start_session();
     if (!shan_dashboard_is_authenticated()) {
         header('Location: ' . shan_dashboard_base());
         exit;
     }
+    if (!$allowPasswordChange && !empty(shan_current_user()['must_change_password'])) {
+        header('Location: ' . shan_dashboard_base() . 'account.php'); exit;
+    }
 }
+
+require_once __DIR__ . '/_access.php';

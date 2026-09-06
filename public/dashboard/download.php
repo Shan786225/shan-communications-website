@@ -2,8 +2,10 @@
 declare(strict_types=1);
 
 ini_set('display_errors', '0');
-require_once dirname(__DIR__) . '/api/_backend.php';
+require_once __DIR__ . '/_common.php';
+dashboard_headers();
 shan_dashboard_require_auth();
+dashboard_require_permission('job.cv');
 
 $publicId = trim((string)($_GET['id'] ?? ''));
 if (!preg_match('/^[a-f0-9-]{36}$/', $publicId)) {
@@ -12,7 +14,7 @@ if (!preg_match('/^[a-f0-9-]{36}$/', $publicId)) {
 }
 
 try {
-    $statement = shan_db()->prepare('SELECT resume_file_name, resume_stored_name, resume_mime FROM shan_submissions WHERE public_id = :public_id AND resume_stored_name IS NOT NULL LIMIT 1');
+    $statement = shan_db()->prepare("SELECT resume_file_name, resume_stored_name, resume_mime FROM shan_submissions WHERE public_id = :public_id AND form_type='job' AND NOT EXISTS (SELECT 1 FROM shan_submission_trash t WHERE t.submission_id=shan_submissions.id) AND resume_stored_name IS NOT NULL LIMIT 1");
     $statement->execute(['public_id' => $publicId]);
     $file = $statement->fetch();
     $storage = rtrim((string)(shan_config()['storage_dir'] ?? ''), '/');

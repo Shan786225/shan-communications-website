@@ -12,7 +12,7 @@ $errorMessage = '';
 $submission = null;
 
 try {
-    $statement = shan_db()->prepare('SELECT * FROM shan_submissions WHERE public_id = :id LIMIT 1');
+    $statement = shan_db()->prepare('SELECT * FROM shan_submissions WHERE public_id = :id AND NOT EXISTS (SELECT 1 FROM shan_submission_trash t WHERE t.submission_id=shan_submissions.id) LIMIT 1');
     $statement->execute(['id' => $publicId]);
     $submission = $statement->fetch() ?: null;
 } catch (Throwable $error) {
@@ -21,11 +21,17 @@ try {
     http_response_code(503);
 }
 
+if ($submission && !shan_can($submission['form_type'].'.view')) { dashboard_deny(404,'This submission is not available to your account.'); }
+$canEdit=$submission && shan_can($submission['form_type'].'.edit');
+$canStatus=$submission && shan_can($submission['form_type'].'.status');
+
 $draftStatus = $submission['workflow_status'] ?? 'new';
 $draftNotes = $submission['admin_notes'] ?? '';
 if ($submission && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $draftStatus = is_string($_POST['workflow_status'] ?? null) ? $_POST['workflow_status'] : '';
-    $draftNotes = is_string($_POST['admin_notes'] ?? null) ? trim($_POST['admin_notes']) : '';
+    if(!$canEdit && !$canStatus){dashboard_deny();}
+    if((isset($_POST['workflow_status']) && !$canStatus && $_POST['workflow_status']!==$draftStatus) || (isset($_POST['admin_notes']) && !$canEdit && $_POST['admin_notes']!==$draftNotes)){dashboard_deny();}
+    $draftStatus = $canStatus && is_string($_POST['workflow_status'] ?? null) ? $_POST['workflow_status'] : $draftStatus;
+    $draftNotes = $canEdit && is_string($_POST['admin_notes'] ?? null) ? trim($_POST['admin_notes']) : $draftNotes;
     $notesLength = function_exists('mb_strlen') ? mb_strlen($draftNotes) : strlen($draftNotes);
     if (!shan_dashboard_verify_csrf((string)($_POST['csrf'] ?? ''))) {
         http_response_code(403);
@@ -37,9 +43,9 @@ if ($submission && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         try {
             $pdo = shan_db();
             $pdo->beginTransaction();
-            $locked = $pdo->prepare('SELECT updated_at FROM shan_submissions WHERE id = :id FOR UPDATE');
+            $locked = $pdo->prepare('SELECT * FROM shan_submissions WHERE id = :id FOR UPDATE');
             $locked->execute(['id' => $submission['id']]);
-            if ($locked->fetchColumn() !== (string)($_POST['updated_at'] ?? '')) {
+            if (!hash_equals(hash('sha256',json_encode($locked->fetch())),dashboard_text($_POST,'revision'))) {
                 $pdo->rollBack();
                 $errorMessage = 'This submission changed in another session. Your draft is still below. Reload the latest version before saving.';
                 http_response_code(409);
@@ -49,6 +55,7 @@ if ($submission && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     'status' => $draftStatus, 'notes' => $draftNotes !== '' ? $draftNotes : null,
                     'sheets_status' => !empty($config['google_sheets']['enabled']) ? 'pending' : 'disabled', 'id' => $submission['id'],
                 ]);
+                shan_audit('submission.review_updated',$publicId,$pdo);
                 $pdo->commit();
                 // A sync failure must never turn a successfully saved review into an error.
                 $sync = 'failed';
@@ -92,19 +99,21 @@ dashboard_head($submission ? 'Review ' . $submission['full_name'] : 'Submission 
                 <div class="detail-wide"><dt><?= $isJob ? 'Role of interest' : 'Area of interest' ?></dt><dd><?= dashboard_h($isJob ? $submission['role_name'] : $submission['topic']) ?></dd></div>
                 <?php if ($isJob): ?><div><dt>Relevant experience</dt><dd><?= dashboard_h($submission['experience'] ?: 'Not provided') ?></dd></div><div><dt>Availability</dt><dd><?= dashboard_h($submission['availability'] ?: 'Not provided') ?></dd></div><?php endif; ?>
             </dl>
-            <?php if ($isJob): ?><div class="cv-card"><div><strong>Curriculum vitae</strong><span><?= dashboard_h($submission['resume_file_name'] ?: ($submission['resume_url'] ? 'Submitted as a link' : 'No CV provided')) ?></span></div><?php if ($submission['resume_stored_name']): ?><a class="button button-secondary" href="/dashboard/download.php?id=<?= rawurlencode($publicId) ?>">Download CV ↓</a><?php elseif ($submission['resume_url']): ?><a class="button button-secondary" href="<?= dashboard_h($submission['resume_url']) ?>" target="_blank" rel="noopener noreferrer">Open CV ↗</a><?php endif; ?></div><?php endif; ?>
+            <?php if ($isJob && shan_can('job.cv')): ?><div class="cv-card"><div><strong>Curriculum vitae</strong><span><?= dashboard_h($submission['resume_file_name'] ?: ($submission['resume_url'] ? 'Submitted as a link' : 'No CV provided')) ?></span></div><?php if ($submission['resume_stored_name']): ?><a class="button button-secondary" href="<?= dashboard_h(shan_dashboard_base()) ?>download.php?id=<?= rawurlencode($publicId) ?>">Download CV ↓</a><?php elseif ($submission['resume_url']): ?><a class="button button-secondary" href="<?= dashboard_h($submission['resume_url']) ?>" target="_blank" rel="noopener noreferrer">Open CV ↗</a><?php endif; ?></div><?php endif; ?>
+            <?php if($canEdit):?><p><a class="button button-secondary" href="<?= dashboard_h(shan_dashboard_base()) ?>edit.php?id=<?= rawurlencode($publicId) ?>">Edit submission details</a></p><?php endif;?>
         </section>
         <section class="review-card workflow-card">
             <div class="card-heading"><span class="section-number">02</span><h2>Manage submission</h2></div>
             <form method="post" action="<?= dashboard_h($reviewUrl) ?>" class="update-form">
                 <input type="hidden" name="csrf" value="<?= dashboard_h(shan_dashboard_csrf()) ?>">
                 <input type="hidden" name="updated_at" value="<?= dashboard_h($submission['updated_at']) ?>">
-                <fieldset><legend>Workflow status</legend><div class="status-options">
+                <input type="hidden" name="revision" value="<?= hash('sha256',json_encode($submission)) ?>">
+                <fieldset <?= $canStatus?'':'disabled' ?>><legend>Workflow status</legend><div class="status-options">
                     <?php foreach (dashboard_statuses() as $value => $label): ?><label class="status-option"><input type="radio" name="workflow_status" value="<?= $value ?>" <?= $draftStatus === $value ? 'checked' : '' ?> required><span><?= $label ?></span></label><?php endforeach; ?>
                 </div></fieldset>
-                <label><span>Internal notes</span><textarea name="admin_notes" rows="5" maxlength="4000" placeholder="Record the next step, follow-up, or team notes."><?= dashboard_h($draftNotes) ?></textarea></label>
+                <label><span>Internal notes</span><textarea name="admin_notes" rows="5" maxlength="4000" <?= $canEdit?'':'readonly' ?> placeholder="Record the next step, follow-up, or team notes."><?= dashboard_h($draftNotes) ?></textarea></label>
                 <p class="field-hint">Notes stay private in this dashboard. Status changes also update Google Sheets.</p>
-                <button type="submit">Save changes</button>
+                <?php if($canEdit || $canStatus):?><button type="submit">Save changes</button><?php else:?><p class="field-hint">Your access to this submission is view-only.</p><?php endif;?>
             </form>
         </section>
         <section class="review-card message-card">
@@ -118,6 +127,7 @@ dashboard_head($submission ? 'Review ' . $submission['full_name'] : 'Submission 
                 <div><dt>Google Sheets</dt><dd><?= dashboard_h(dashboard_delivery($submission['sheets_status'])) ?></dd></div>
                 <div class="detail-wide"><dt>Submission ID</dt><dd class="reference-id"><?= dashboard_h($publicId) ?></dd></div>
             </dl>
+            <?php if(shan_can($submission['form_type'].'.delete')):?><details class="trash-confirm"><summary>Move this submission to Trash</summary><p>It can be restored. Existing Google Sheet copies and sent emails are retained.</p><form method="post" action="<?= dashboard_h(shan_dashboard_base()) ?>trash.php"><input type="hidden" name="csrf" value="<?= dashboard_h(shan_dashboard_csrf()) ?>"><input type="hidden" name="id" value="<?= dashboard_h($publicId) ?>"><input type="hidden" name="action" value="trash"><button class="button-danger">Confirm move to Trash</button></form></details><?php endif;?>
         </section>
     </div>
     <?php endif; ?>

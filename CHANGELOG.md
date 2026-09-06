@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 — Staff accounts and permissions
+
+- Added administrator-managed staff accounts, role presets and per-section/action permissions with server-side enforcement.
+- Added own-password changes, administrator resets, mandatory temporary-password replacement and session revocation.
+- Added private staff messages, unread/read states, submission editing, recoverable Trash and an administrator activity log.
+- Preserved the CEO login and existing submissions; documented account management, recovery and permission boundaries.
+
 ## 2026-09-05 — Dashboard QA and Sheets delivery
 
 - Fixed native MySQL search parameters, combined filters, filtered CSV exports and out-of-range pagination.

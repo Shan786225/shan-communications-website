@@ -72,12 +72,8 @@ if ($configurationError === '' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')
         if (dashboard_login_rate_limited()) {
             $errorMessage = 'Too many login attempts. Please wait 15 minutes and try again.';
             http_response_code(429);
-        } elseif ($expected !== '' && hash_equals($expected, $username) && password_verify($password, (string)($dashboard['password_hash'] ?? ''))) {
+        } elseif (shan_login_user($username, $password)) {
             dashboard_clear_login_failures();
-            session_regenerate_id(true);
-            $_SESSION['shan_authenticated'] = true;
-            $_SESSION['last_activity'] = time();
-            $_SESSION['csrf'] = bin2hex(random_bytes(24));
             header('Location: ' . shan_dashboard_base());
             exit;
         } else {
@@ -95,6 +91,7 @@ if ($configurationError === '' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')
         header('Location: ' . shan_dashboard_base());
         exit;
     } elseif ($action === 'sync' && shan_dashboard_is_authenticated()) {
+        dashboard_require_permission('sheets.manage');
         try {
             $result = shan_retry_sheets(5);
             dashboard_flash($result['synced'] . ' submission(s) synced. ' . $result['remaining'] . ' still waiting.', $result['remaining'] ? 'warning' : 'success');
@@ -144,7 +141,8 @@ if (!$authenticated):
 exit;
 endif;
 
-[$whereSql, $parameters] = dashboard_query($filters);
+shan_dashboard_require_auth();
+[$whereSql, $parameters] = dashboard_query($filters, dashboard_types());
 $type = $filters['type'];
 $status = $filters['status'];
 $search = $filters['q'];
@@ -154,7 +152,8 @@ $stats = ['total' => 0, 'business_total' => 0, 'job_total' => 0, 'new_total' => 
 
 try {
     $pdo = shan_db();
-    $stats = $pdo->query("SELECT COUNT(*) AS total, SUM(form_type = 'business') AS business_total, SUM(form_type = 'job') AS job_total, SUM(workflow_status = 'new') AS new_total, SUM(DATE(DATE_ADD(created_at, INTERVAL 5 HOUR)) = DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 5 HOUR))) AS today_total, SUM(sheets_status <> 'synced') AS unsynced FROM shan_submissions")->fetch();
+    [$scope] = dashboard_query(dashboard_filters([]), dashboard_types());
+    $stats = $pdo->query("SELECT COUNT(*) AS total, SUM(form_type = 'business') AS business_total, SUM(form_type = 'job') AS job_total, SUM(workflow_status = 'new') AS new_total, SUM(DATE(DATE_ADD(created_at, INTERVAL 5 HOUR)) = DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 5 HOUR))) AS today_total, SUM(sheets_status <> 'synced') AS unsynced FROM shan_submissions" . $scope)->fetch();
     $countStatement = $pdo->prepare('SELECT COUNT(*) FROM shan_submissions' . $whereSql);
     $countStatement->execute($parameters);
     $totalRows = (int)$countStatement->fetchColumn();
@@ -181,7 +180,7 @@ $sheets = $config['google_sheets'] ?? [];
     <main class="dashboard-main" id="dashboard-content">
         <section class="dashboard-intro">
             <div><span class="eyebrow">Operations dashboard</span><h1>Website submissions</h1><p>Review inquiries, manage applications, and keep the next step clear.</p></div>
-            <a class="button button-secondary" href="<?= dashboard_h(dashboard_url($filters, '/dashboard/export.php')) ?>">Export results ↓</a>
+            <div class="inline-actions"><?php if(dashboard_types('delete')):?><a class="button button-secondary" href="<?= dashboard_h(shan_dashboard_base()) ?>trash.php">Trash</a><?php endif;?><?php if(dashboard_types('export')):?><a class="button button-secondary" href="<?= dashboard_h(dashboard_url($filters, '/dashboard/export.php')) ?>">Export permitted results ↓</a><?php endif;?></div>
         </section>
 
         <?php if ($notice !== ''): ?><p class="alert alert-success" role="status"><?= dashboard_h($notice) ?></p><?php endif; ?>
@@ -196,10 +195,10 @@ $sheets = $config['google_sheets'] ?? [];
             <article><span>Today</span><strong><?= (int)($stats['today_total'] ?? 0) ?></strong><small>Pakistan time</small></article>
         </section>
 
-        <section class="sync-strip" aria-label="Google Sheets delivery">
+        <?php if(shan_can('sheets.manage')): ?><section class="sync-strip" aria-label="Google Sheets delivery">
             <div><span class="connection-dot <?= !empty($sheets['enabled']) && !(int)$stats['unsynced'] ? 'is-live' : '' ?>"></span><span><strong>Google Sheets</strong><small><?= empty($sheets['enabled']) ? 'Not connected' : ((int)$stats['unsynced'] ? (int)$stats['unsynced'] . ' waiting to sync' : ((int)$stats['total'] ? 'All submissions synced' : 'Ready for submissions')) ?></small></span></div>
             <?php if (!empty($sheets['enabled']) && (int)$stats['unsynced'] > 0): ?><form method="post" action="<?= dashboard_h(dashboard_url($filters)) ?>"><input type="hidden" name="csrf" value="<?= dashboard_h(shan_dashboard_csrf()) ?>"><input type="hidden" name="action" value="sync"><button class="button-secondary" type="submit">Retry pending sync</button></form><?php endif; ?>
-        </section>
+        </section><?php endif; ?>
 
         <section class="submission-panel">
             <form method="get" class="filters">

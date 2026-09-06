@@ -1,5 +1,21 @@
 # Backend Operations
 
+## Staff accounts, access and messages
+
+Open `/dashboard/` with the existing CEO login. The first successful sign-in imports the configured administrator hash once into `shan_users`; subsequent logins and password changes use the database, never the legacy hash as a fallback.
+
+- **Users & access**: add an Administrator, Sub-admin, HR, Receptionist or Custom account. Admin and Sub-admin have full dashboard privileges. Staff roles use the saved checkboxes, not the role name. Load a preset when creating an account, then adjust its grants. Jobs and business each have view, details/notes edit, status, export and Trash/restore permissions; jobs also have a separate CV permission. Actions require view access.
+- **My account**: change your password using your current password. Administrators reset another account from Users & access after confirming their own password. Temporary passwords must be replaced before accessing records or messages. Access/password changes revoke existing sessions. An administrator cannot disable/demote their own account; the last active administrator is protected.
+- **Messages**: private one-to-one staff text conversations, unread badges, sent/read state, refresh and older-message navigation. Only participants can read a thread; admin status does not provide access to other people's conversations. This is an inbox, not a continuously polling live-chat service. No message contents are sent to Sheets or email.
+- **Trash**: recoverable removal from dashboard results, exports and CV access. Restore requires the same section's delete permission. This is not permanent erasure: existing Google Sheet copies, sent emails, backups and the underlying record/CV are retained.
+- **Activity log**: administrators can inspect account, password and submission changes. Passwords and message bodies are not logged.
+
+All authorization is enforced server-side, including direct record URLs, exports, CV downloads, account administration and message queries. Summaries/search/export are scoped to the permitted submission type. Shared Google Sheet access and manual global sync remain admin-only; existing Google account sharing is separate from dashboard permissions. Staff accounts never receive database passwords or cPanel access.
+
+Schema additions are idempotent and additive (`shan_users`, `shan_access_meta`, `shan_submission_trash`, `shan_messages`, `shan_audit`). Keep the old release and a verified full-account backup before deployment. Rollback must not discard these tables; returning to the old single-user login also restores its legacy configuration-password behavior, so do not roll back authentication without reviewing password changes made since release.
+
+Tests: `php tests/access-control.php`, `php tests/dashboard-query.php`, and `node tests/dashboard-access.mjs` against an isolated staging database. `tests/fixtures/rbac.php` is a secret-guarded staging fixture, excluded from `public/` and the production export. Do not deploy it to production. The staging config must use a separate database, CV directory and session name, with Sheets disabled.
+
 ## Production components
 
 - Dashboard: `https://shancommunication.com/dashboard/`
@@ -32,7 +48,7 @@ Choose **Review** to open a dedicated submission page. Choose a status, enter in
 
 Search covers name, email, phone, submission ID, job role and service. Search and CSV export share the same filters. Each SQL search field has a distinct parameter because native MySQL prepared statements cannot reuse a named parameter. Dates and the Today count use Asia/Karachi (UTC+5); database timestamps and Sheet timestamps remain UTC.
 
-To change the administrator password, generate a new PHP-compatible bcrypt hash and replace only `dashboard.password_hash` in `/home/comshan979/shan_config/backend.php`. Do not store the plain password in the repository.
+Change passwords through **My account** or **Users & access**. After the one-time administrator import, changing the old configuration hash does not change the login. Emergency recovery must update the exact `shan_users` row with a freshly generated PHP password hash and increment `session_version`, after verifying the account owner and taking a database backup. Never store a plain password in the repository.
 
 ## Database changes
 

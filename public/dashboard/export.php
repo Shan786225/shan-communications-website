@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/_common.php';
 dashboard_headers();
 shan_dashboard_require_auth();
+if (!dashboard_types('export')) { dashboard_deny(); }
 
 function dashboard_csv_value($value): string
 {
@@ -24,14 +25,14 @@ fwrite($output, "\xEF\xBB\xBF");
 fputcsv($output, ['ID', 'Received UTC', 'Type', 'Status', 'Full name', 'Email', 'Phone', 'Area or role', 'Experience', 'Availability', 'CV URL', 'CV file', 'Message', 'Email delivery', 'Google Sheets', 'Internal notes']);
 
 try {
-    [$where, $parameters] = dashboard_query(dashboard_filters($_GET));
+    [$where, $parameters] = dashboard_query(dashboard_filters($_GET), dashboard_types('export'));
     $statement = shan_db()->prepare('SELECT * FROM shan_submissions' . $where . ' ORDER BY created_at DESC');
     $statement->execute($parameters);
     while ($row = $statement->fetch()) {
         fputcsv($output, array_map('dashboard_csv_value', [
             $row['public_id'], $row['created_at'], $row['form_type'], $row['workflow_status'],
             $row['full_name'], $row['email'], $row['phone'], $row['form_type'] === 'job' ? $row['role_name'] : $row['topic'],
-            $row['experience'], $row['availability'], $row['resume_url'], $row['resume_file_name'],
+            $row['experience'], $row['availability'], shan_can('job.cv') ? $row['resume_url'] : '', shan_can('job.cv') ? $row['resume_file_name'] : '',
             $row['message'], $row['email_status'], $row['sheets_status'], $row['admin_notes'],
         ]));
     }
